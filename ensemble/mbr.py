@@ -10,9 +10,9 @@ pred_list =[
     'val_model3_dft_unlabelp10.json'
 ]
 
+independent = False  # False=exact matching only, True=allow independent start/end override
 # sample_id = '29043_173556_32734'
-sample_id = float("nan")
-
+sample_id = float("nan") #Nan to process all files
 OUTPUT_JSON_SINGLE = None   # e.g. "single_doc_mbr.json" or None for auto name
 OUTPUT_JSON_ALL = "mbr_merged_3_models.json"
 
@@ -225,10 +225,11 @@ def cluster_support(cluster: List[Dict], model_weights: Dict[int, float]) -> flo
     return sum(model_weights.get(m, 0.0) for m in supporting_models)
 
 
-def weighted_boundary_vote(cluster: List[Dict], model_weights: Dict[int, float]) -> Tuple[int, int]:
+def weighted_boundary_vote(cluster: List[Dict], model_weights: Dict[int, float]) -> Tuple[Tuple[int, int], str]:
     """
     Refine a cluster into one final boundary.
     Final boundary is always one of the observed boundaries.
+    Returns ((start, end), source) where source is "best_score" or "observed_candidate".
     """
     boundary_scores = defaultdict(float)
     start_scores = defaultdict(float)
@@ -256,9 +257,38 @@ def weighted_boundary_vote(cluster: List[Dict], model_weights: Dict[int, float])
     )
 
     if boundary_scores[candidate_boundary] > best_score:
-        return candidate_boundary
+        return candidate_boundary, "observed_candidate"
 
-    return best_boundary
+    return best_boundary, "best_score"
+
+
+def weighted_boundary_vote_override(cluster: List[Dict], model_weights: Dict[int, float]) -> Tuple[int, int]:
+    """
+    Like weighted_boundary_vote but allows the best independently-voted
+    start and end to override observed boundaries (not constrained to exact match).
+    """
+    start_scores = defaultdict(float)
+    end_scores = defaultdict(float)
+
+    for span in cluster:
+        w = model_weights.get(span["model_idx"], 0.0)
+        start_scores[span["start_offset"]] += w
+        end_scores[span["end_offset"]] += w
+
+    best_start = max(start_scores.items(), key=lambda x: (x[1], -x[0]))[0]
+    best_end = max(end_scores.items(), key=lambda x: (x[1], x[0]))[0]
+
+    if best_end <= best_start:
+        # Fallback to best observed boundary if override is invalid
+        boundary_scores = defaultdict(float)
+        for span in cluster:
+            w = model_weights.get(span["model_idx"], 0.0)
+            key = (span["start_offset"], span["end_offset"])
+            boundary_scores[key] += w
+        best_boundary = max(boundary_scores.items(), key=lambda x: (x[1], -(x[0][1] - x[0][0])))[0]
+        return best_boundary
+
+    return (best_start, best_end)
 
 
 def deduplicate_final_spans(spans: List[Dict], min_iou_same_cat: float = 0.8) -> List[Dict]:
@@ -305,6 +335,7 @@ def mbr_cluster_and_refine_single_doc(
     min_pairwise_iou: float = 0.1,
     min_cluster_support: float = 0.34,
     min_iou_same_cat: float = 0.8,
+    independent: bool = False,
     verbose: bool = False,
 ) -> Dict:
     """
@@ -352,7 +383,12 @@ def mbr_cluster_and_refine_single_doc(
 
         for cluster in clusters:
             support = cluster_support(cluster, model_weights)
-            refined_start, refined_end = weighted_boundary_vote(cluster, model_weights)
+
+            if independent:
+                refined_start, refined_end = weighted_boundary_vote_override(cluster, model_weights)
+                boundary_source = "independent_merge"
+            else:
+                (refined_start, refined_end), boundary_source = weighted_boundary_vote(cluster, model_weights)
 
             record = {
                 "category": category,
@@ -479,6 +515,7 @@ if process_all:
             min_cluster_iou=0.1,
             min_pairwise_iou=0.1,
             min_cluster_support=0.34,
+            independent=independent,
             verbose=False,
         )
 
@@ -501,6 +538,7 @@ else:
         min_cluster_iou=0.1,
         min_pairwise_iou=0.1,
         min_cluster_support=0.34,
+        independent=independent,
         verbose=True,
     )
 
