@@ -79,7 +79,16 @@ medexact-lamar/
 ```bash
 pip install -r requirements.txt
 ```
+---
+## Dataset
+Download the following resources:
+| Resource | Description |
+|----------|-------------|
+| [MIMIC-III](https://physionet.org/content/mimiciii/1.4/#) | Discharge Summaries and Demographic Information | 
+| [MedDec Annotations](https://physionet.org/content/meddec/1.0.0/) | Ground Truth Annotations and Dataset Splits |
+| [MedDec Official Repo](https://github.com/CLU-UML/MedDec)  | Reference Implementation|
 
+> **Note:** Access to MIMIC-III and MedDec requires credentialed access via PhysioNet.
 ---
 
 ## Usage
