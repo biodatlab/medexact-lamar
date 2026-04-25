@@ -1,8 +1,6 @@
-# LAMAR at MedExACT 2026
+# **Agreement-Driven LLM Ensembles for Clinical Decision Extraction from Discharge Summaries**
 
-**Agreement-Driven LLM Ensembles for Clinical Decision Extraction from Discharge Summaries**
-
-2nd place @ MedExACT 2026 · Overall F1: **0.5942** · Token F1: **0.6750** · Span F1: **0.5257**
+2nd place @ [MedExACT | BioNLP 2026](https://sites.google.com/view/medexact-acl2026/home) · Overall F1: **0.5942** · Token F1: **0.6750** · Span F1: **0.5257**
 
 ---
 
