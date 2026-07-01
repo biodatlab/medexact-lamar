@@ -1,6 +1,18 @@
-# **Agreement-Driven LLM Ensembles for Clinical Decision Extraction from Discharge Summaries**
+# Agreement-Driven LLM Ensembles for Clinical Decision Extraction from Discharge Summaries
 
-2nd place @ [MedExACT | BioNLP 2026](https://sites.google.com/view/medexact-acl2026/home) · Overall F1: **0.5942** · Token F1: **0.6750** · Span F1: **0.5257**
+<p align="left">
+  <a href="https://sites.google.com/view/medexact-acl2026/home"><img src="https://img.shields.io/badge/MedExACT-BioNLP%202026-blue?style=for-the-badge" alt="Shared Task"></a>
+  <a href="https://aclanthology.org/2026.bionlp-2.25/"><img src="https://img.shields.io/badge/📄%20Paper-ACL%20Anthology-red?style=for-the-badge" alt="Paper"></a>
+  <img src="https://img.shields.io/badge/Rank-2nd%20Place-gold?style=for-the-badge" alt="Rank">
+</p>
+
+> **🥈 2nd Place Winner** at the MedExACT shared task (BioNLP 2026). This repository contains the official implementation of our agreement-driven ensemble of Qwen3.5-4B variants designed to extract overlapping clinical decision spans from discharge summaries.
+
+### 📊 Key Performance Metrics
+
+| Overall F1 | Token F1 | Span F1 |
+| :---: | :---: | :---: |
+| **0.5942** | **0.6750** | **0.5257** |
 
 ---
 
@@ -235,11 +247,16 @@ python scripts/push_to_hub.py \
     author = "Chiewhawan, Monrada  and
       Limaroon, Keetawan  and
       Achakulvisut, Titipat",
-    booktitle = "Proceedings of the 25th Workshop on Biomedical Language Processing (Shared Tasks)",
+    editor = "Gupta, Deepak  and
+      Demner-Fushman, Dina",
+    booktitle = "Proceedings of the {B}io{NLP} 2026 (Shared Tasks)",
     month = jul,
     year = "2026",
-    address = "San Diego, California, United States",
+    address = "San Diego, California, USA",
     publisher = "Association for Computational Linguistics",
-    abstract = "Clinical decision extraction from discharge summaries detects contiguous text spans expressing medical decisions and assigns each to predefined categories. In this paper, we propose an ensemble approach using large language models for clinical decision extraction from discharge summaries in the MedDec dataset with XML-like inline tag annotations. The ensemble consists of Qwen3.5-4B models trained under three different settings: (1) Dynamic Fine-tuning (DFT) with LoRA on the original training set, (2) DFT with LoRA then GRPO reinforcement on the original training set, and (3) DFT with LoRA on the original training set augmented with pseudo-labels. We aggregated predictions for each document by category using weights derived from inter-model agreement. Agreement-driven ensembles further enhanced performance across all metrics, achieving a Span F1 of 0.5257, a Token F1 of 0.6750, and a Worst Group F1 of 0.5881, yielding an Overall F1 of 0.5942 and securing second place on the test leaderboard. Subgroup analysis further confirms that performance remains consistent across demographic groups, with no disproportionate degradation on underrepresented populations. We release our code at https://github.com/biodatlab/medexact-lamar."
+    url = "https://aclanthology.org/2026.bionlp-2.25/",
+    pages = "179--190",
+    ISBN = "979-8-89176-435-4",
+    abstract = "This paper presents an ensemble of Qwen3.5-4B language models for extracting medical decisions from discharge summaries in the MedDec dataset. The models were trained to annotate discharge summaries with inline XML-like tags. Three different training strategies were used including dynamic fine-tuning, reinforcement learning, and pseudo-label augmentation. By combining predictions based on inter-model agreement, the system improved performance across evaluation metrics, achieving an overall F1 of 0.5942 and ranking second on the test leaderboard. The results also showed stable performance across demographic groups, suggesting fairness for underrepresented populations."
 }
 ```
